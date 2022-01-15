@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "fireopal.groupchat.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ReloadCommandMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
