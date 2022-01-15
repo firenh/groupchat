@@ -11,7 +11,7 @@ import fireopal.groupchat.group.GroupChatFile;
 import fireopal.groupchat.util.FOModVersion;
 
 public class GroupChat implements ModInitializer {
-	public static final FOModVersion VERSION = FOModVersion.fromString("0.0.0");
+	public static final FOModVersion VERSION = FOModVersion.fromString("1.0.0");
 	public static final String MODID = "groupchat";
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 
