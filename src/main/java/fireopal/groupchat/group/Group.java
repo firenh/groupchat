@@ -89,4 +89,13 @@ public class Group {
     public void setPlayerList(Set<NameAndUUID> players) {
         this.playerList = players;
     }
+
+    public String playerListAsString() {
+        String s = "";
+        for (NameAndUUID n : playerList) {
+            s += ", " + n.name();
+        }
+
+        return s.substring(s.length() - 2, s.length());
+    }
 }

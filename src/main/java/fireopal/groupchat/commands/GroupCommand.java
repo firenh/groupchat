@@ -54,7 +54,7 @@ public class GroupCommand {
                         )
                     )
                 )
-                .then(CommandManager.literal("create")
+                .then(CommandManager.literal("create").requires(serverCommandSource -> true)
                     .then(CommandManager.argument("Group Name", StringArgumentType.string())
                         .executes((context) -> create(context))
                         .then(CommandManager.argument("Password", StringArgumentType.string())
@@ -155,6 +155,10 @@ public class GroupCommand {
             }
         }
 
+        if (GroupChat.getConfig().logChatMessages) {
+            GroupChat.LOGGER.info("Chat Message: (" + groupName + ") " + source.getName() + ": " + MessageArgumentType.getMessage(context, "message").asString());
+        }
+
         return i;
     }
 
@@ -242,12 +246,14 @@ public class GroupCommand {
         }
 
         playerListAsString = playerListAsString.substring(2);
+        String passwordString = GroupChat.getConfig().enablePasswords ? "\nPassword: " + group.getPassword() : "";
+
 
         int playerCount = group.getPlayerList().size();
         Text feedback = new LiteralText(
             "Group \"" + groupName + "\" has " + playerCount + " player" + (playerCount == 1 ? "" : "s") + "\n" +
-            "Players: " + playerListAsString + "\n" + 
-            "Password: " + group.getPassword()
+            "Players: " + playerListAsString +
+            passwordString
         );
 
         source.sendFeedback(feedback, false);
@@ -300,7 +306,7 @@ public class GroupCommand {
             password = StringArgumentType.getString(context, "Password");
         } catch (IllegalArgumentException e) {}
 
-        if (group.hasPassword() && !group.passwordMatches(password)) {
+        if (group.hasPassword() && GroupChat.getConfig().enablePasswords && !group.passwordMatches(password)) {
             source.sendError(new LiteralText("That password does not match!"));
             return 0;
         }
@@ -400,7 +406,7 @@ public class GroupCommand {
 
         MutableText groupText = new LiteralText(groupName).styled(style -> style
             .withColor(Formatting.GREEN)
-            .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/group join " + groupName + " " + group2.getPassword()))
+            .withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/group join " + groupName + " " + (GroupChat.getConfig().enablePasswords ? group2.getPassword() : "")))
             .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new LiteralText(
                 "Group: " + groupName + "\n" + 
                 "Password: " + group2.getPassword() + "\n" +

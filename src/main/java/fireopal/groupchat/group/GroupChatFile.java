@@ -18,9 +18,18 @@ import fireopal.groupchat.GroupChat;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class GroupChatFile {
+    final static Path GROUP_CHAT_FILE_PATH = Paths.get("", "config", "groups.json");
+
     private static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public String FILE_VERSION_DO_NOT_TOUCH_PLS = GroupChat.VERSION.toString();
+    public String FILE_VERSION_DO_NOT_TOUCH_PLS = GroupChat.FILE_VERSION.toString();
+    public Config config = new Config();
+
+    public static class Config {
+        public boolean enablePasswords = true;
+        public boolean logChatMessages = false;
+    }
+
     public Set<Group> groups = Sets.newHashSet();
 
     public Set<String> getGroupsForPlayer(NameAndUUID nameAndUUID) {
@@ -57,7 +66,7 @@ public class GroupChatFile {
     public void addGroup(Group group) {
         groups.add(group);
         this.save();
-        GroupChat.LOGGER.info("Created group " + group);
+        GroupChat.LOGGER.info("Created group " + group.getName());
     }
 
     public void setGroup(Group group) {
@@ -84,10 +93,10 @@ public class GroupChatFile {
         try {
             Paths.get("", "config").toFile().mkdirs();
 
-            Path groupChatFilePath = Paths.get("", "config", "groups.json");
+            
 
             BufferedWriter writer = new BufferedWriter(
-                new FileWriter(groupChatFilePath.toFile())
+                new FileWriter(GROUP_CHAT_FILE_PATH.toFile())
             );
 
             writer.write(gson.toJson(this));
@@ -122,23 +131,21 @@ public class GroupChatFile {
         GroupChatFile groupChatFile = null;
 
         try {
-            Path path = Paths.get("", "config", "groups.json");
-
-            if (Files.exists(path)) {
+            if (Files.exists(GROUP_CHAT_FILE_PATH)) {
                 GroupChat.LOGGER.info("File exists; reading from file");
 
                 groupChatFile = gson.fromJson(
-                    new FileReader(path.toFile()),
+                    new FileReader(GROUP_CHAT_FILE_PATH.toFile()),
                     GroupChatFile.class
                 );
 
-                if (!groupChatFile.FILE_VERSION_DO_NOT_TOUCH_PLS.equals(GroupChat.VERSION.toString())) {
+                if (!groupChatFile.FILE_VERSION_DO_NOT_TOUCH_PLS.equals(GroupChat.FILE_VERSION.toString())) {
                     GroupChat.LOGGER.info("Different file version! Rewriting");
 
-                    groupChatFile.FILE_VERSION_DO_NOT_TOUCH_PLS = GroupChat.VERSION.toString();
+                    groupChatFile.FILE_VERSION_DO_NOT_TOUCH_PLS = GroupChat.FILE_VERSION.toString();
 
                     BufferedWriter writer = new BufferedWriter(
-                        new FileWriter(path.toFile())
+                        new FileWriter(GROUP_CHAT_FILE_PATH.toFile())
                     );
 
                     writer.write(gson.toJson(groupChatFile));
@@ -152,7 +159,7 @@ public class GroupChatFile {
                 Paths.get("", "config").toFile().mkdirs();
 
                 BufferedWriter writer = new BufferedWriter(
-                    new FileWriter(path.toFile())
+                    new FileWriter(GROUP_CHAT_FILE_PATH.toFile())
                 );
 
                 writer.write(gson.toJson(groupChatFile));
