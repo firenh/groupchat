@@ -2,6 +2,7 @@
 
 .gradle/
 build/
+bin/
 out/
 classes/
 
@@ -20,7 +21,7 @@ classes/
 
 .settings/
 .vscode/
-bin/
+.bin/
 .classpath
 .project
 

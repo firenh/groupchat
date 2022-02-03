@@ -24,6 +24,8 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -360,11 +362,11 @@ public class GroupCommand {
             return 0;
         } 
 
-        GroupChat.groupChatFile.removePlayerFromGroup(groupName, player);
         source.sendFeedback(new LiteralText(
             "Left Group \"" + groupName + "\""
         ), false);
 
+        GroupChat.groupChatFile.removePlayerFromGroup(groupName, player);
         return 1;
     }
 
@@ -415,11 +417,24 @@ public class GroupCommand {
         );
 
         boolean bl = false;
-        Text message = new LiteralText(source.getPlayer().getEntityName() + " has invited you to join Group ").append(groupText).append("!");
+        MutableText message = new LiteralText(source.getPlayer().getEntityName() + " has invited you to join Group ").append(groupText).append("!");
+        
+        if (group.hasPassword() && GroupChat.getConfig().enablePasswords) {
+            message.append("\n(This group's password is \"" + group.getPassword() + "\")");
+        }
+
+        message.append(new LiteralText(
+            "\nJoin this group with the command "
+        ).styled(style -> style.withColor(Formatting.GRAY)));
+
+        message.append(new LiteralText(
+            "/group join " + groupName + " " + (GroupChat.getConfig().enablePasswords ? group2.getPassword() : "")
+        ).styled(style -> style.withColor(Formatting.GRAY).withItalic(true)));
 
         for (ServerPlayerEntity p : playerEntities) {
             if (!group.getPlayerListUuids().contains(p.getUuid())) {
                 p.sendMessage(message, MessageType.CHAT, sender);
+                p.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BIT, SoundCategory.VOICE, 1f, 1f);
                 bl = true;
             }
         }

@@ -28,6 +28,8 @@ public class GroupChatFile {
     public static class Config {
         public boolean enablePasswords = true;
         public boolean logChatMessages = false;
+        // public boolean useTranslatableText = false;
+        public boolean soundOnInvite = true;
     }
 
     public Set<Group> groups = Sets.newHashSet();
